@@ -12,7 +12,9 @@ RUN apt-get update && apt-get install -y \
     flex \
     bison \
     nano \
-    htop
+    htop \
+    wget \
+    rsync
 
 ENV HOME=/home/openfoam
 ENV MP=$HOME/OpenFOAM/openfoam-2.2.0/applications/solvers/multiphase
@@ -22,7 +24,7 @@ ENV CASES=$HOME/OpenFOAM/Cases
 # Important for correct OpenFOAM env variables
 ENV USER=openfoam
 
-RUN groupadd -r openfoam && useradd --no-log-init -s /bin/bash -r -g openfoam openfoam
+RUN useradd --no-log-init -s /bin/bash -r -g users --uid 1000 openfoam 
 
 RUN mkdir -p $HOME/OpenFOAM/openfoam-2.2.0/applications/solvers/multiphase/phaseFieldFoam
 RUN mkdir -p $HOME/OpenFOAM/Cases
@@ -34,9 +36,9 @@ RUN git clone https://github.com/11101011/phaseFieldFoam.git
 
 WORKDIR $MPP
 
-RUN chown -R openfoam:openfoam /home/openfoam
+RUN chown -R openfoam:users /home/openfoam
 
-USER openfoam:openfoam
+USER openfoam:users
 
 # All commands using OpenFOAM specific binaries need to be executed within the same shell environment
 RUN ["/bin/bash", "-c", "source /opt/openfoam220/etc/bashrc && wclean && wmake"]
