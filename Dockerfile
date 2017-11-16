@@ -19,10 +19,13 @@ RUN apt-get update && apt-get install -y \
 ENV HOME=/home/openfoam
 ENV MP=$HOME/OpenFOAM/openfoam-2.2.0/applications/solvers/multiphase
 ENV MPP=$HOME/OpenFOAM/openfoam-2.2.0/applications/solvers/multiphase/phaseFieldFoam
+ENV SRC1=$HOME/OpenFOAM/openfoam-2.2.0/
+ENV SRC2=$HOME/
 ENV SHARE=$HOME/OpenFOAM/share
 ENV CASES=$HOME/OpenFOAM/Cases
 # Important for correct OpenFOAM env variables
 ENV USER=openfoam
+ENV USERP=openfoam-2.2.0
 
 RUN useradd --no-log-init -s /bin/bash -r -g users --uid 1000 openfoam 
 
@@ -34,6 +37,10 @@ WORKDIR $MP
 
 RUN git clone https://github.com/11101011/phaseFieldFoam.git
 
+WORKDIR $HOME/OpenFOAM/$USERP
+
+RUN git clone https://github.com/11101011/src.git
+
 WORKDIR $MPP
 
 RUN chown -R openfoam:users /home/openfoam
@@ -42,6 +49,14 @@ USER openfoam:users
 
 # All commands using OpenFOAM specific binaries need to be executed within the same shell environment
 RUN ["/bin/bash", "-c", "source /opt/openfoam220/etc/bashrc && wclean && wmake"]
+
+WORKDIR $HOME/OpenFOAM/$USERP/src/finiteVolume
+
+RUN ["/bin/bash", "-c", "source /opt/openfoam220/etc/bashrc && wclean && wmake libso"]
+
+WORKDIR $HOME/OpenFOAM/$USERP/src/turbulenceModels/incompressible/RAS
+
+RUN ["/bin/bash", "-c", "source /opt/openfoam220/etc/bashrc && wclean && wmake libso"]
 
 WORKDIR $HOME
 
