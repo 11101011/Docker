@@ -16,7 +16,8 @@ RUN apt-get update && apt-get install -y \
     wget \
     rsync \
     subversion \
-    libapache2-svn 
+    screen \
+    libapache2-svn
 
 ENV HOME=/home/openfoam
 ENV MP=$HOME/OpenFOAM/openfoam-2.2.0/applications/solvers/multiphase
